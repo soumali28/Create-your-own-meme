@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import data from "../data";
 import "./styles/meme.css";
 
 const Form = styled.div`
@@ -51,18 +50,23 @@ function MemeGenerator() {
     randomImage: "",
   });
 
-  const [allMeme, setAllMeme] = useState(data);
+  const [allMeme, setAllMeme] = useState([]);
+
+  useEffect(async () => {
+    fetch("https://api.imgflip.com/get_memes")
+      .then((res) => res.json())
+      .then((data) => setAllMeme(data.data.memes));
+  }, []);
 
   function handleClick() {
-    const memeArray = allMeme.data.memes;
-    const randomNum = Math.floor(Math.random() * memeArray.length);
-    const url = memeArray[randomNum].url;
+    const randomNum = Math.floor(Math.random() * allMeme.length);
+    const url = allMeme[randomNum].url;
     setMeme((prevValue) => ({ ...prevValue, randomImage: url }));
   }
 
   function handleChange(event) {
-    const {name, value} = event.target;
-    setMeme((prevValue) => ({ ...prevValue, [name]:value}));
+    const { name, value } = event.target;
+    setMeme((prevValue) => ({ ...prevValue, [name]: value }));
     console.log(name);
   }
 
